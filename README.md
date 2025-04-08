@@ -1,6 +1,8 @@
 # project-waterman
 Proof of concept / benchmark for Arrow over WebSocket for visualization tooling.
 
+![image](https://github.com/user-attachments/assets/f2aecd69-76f9-4e86-9ac9-f59603936a2c)
+
 ## Services
 
 The project consists of two main services:
