@@ -26,6 +26,45 @@ docker compose up -d
 docker compose logs -f
 ```
 
+# Running Manually (bun + cargo)
+
+## Backend (waterman-bridge)
+
+```bash
+# Navigate to waterman-bridge directory
+cd waterman-bridge
+
+# Build the project
+cargo build --release
+
+# Run with default settings (127.0.0.1:3031, 100Hz)
+cargo run --release
+
+# Or run with custom settings
+cargo run --release -- --address=0.0.0.0 --port=3031 --rate=1000.0
+```
+
+## Frontend (waterman-web)
+
+```bash
+# Navigate to waterman-web directory
+cd waterman-web
+
+# Install dependencies
+bun install
+
+# Start development server
+bun run dev
+
+# Or build for production
+bun run build
+
+# Serve production build (using a simple server)
+bun run preview
+```
+
+Note: When running manually, you'll need to ensure the WebSocket URL in the frontend code matches the address and port of your waterman-bridge instance.
+
 ## Configuration
 
 The waterman-bridge service can be configured with these parameters:

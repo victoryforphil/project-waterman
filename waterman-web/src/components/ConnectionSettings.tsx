@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { TextInput, Group, Button, Paper, Title, Text, Switch } from '@mantine/core';
 
 interface ConnectionSettingsProps {

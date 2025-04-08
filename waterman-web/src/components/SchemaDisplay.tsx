@@ -1,5 +1,4 @@
 import { Paper, Title, Divider, Code } from '@mantine/core';
-import { CodeHighlight } from '@mantine/code-highlight';
 import { JsonView } from 'react-json-view-lite';
 import 'react-json-view-lite/dist/index.css';
 
