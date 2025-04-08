@@ -73,3 +73,28 @@ The waterman-bridge service can be configured with these parameters:
 - `--address`: WebSocket server address (default: 127.0.0.1, in Docker: 0.0.0.0)
 - `--port`: WebSocket server port (default: 3031)
 - `--rate`: Data send rate in Hz (default: 100.0, in Docker: 1000.0)
+
+## CI/CD with GitHub Actions
+
+This project includes a GitHub Actions workflow to build and publish Docker images to GitHub Container Registry (GHCR):
+
+- Images are built automatically on:
+  - Pushes to the `main` branch
+  - Pull requests to the `main` branch
+  - Git tags (with version numbers)
+
+- Docker images are published with several tags:
+  - Branch name (e.g., `main`)
+  - Short Git SHA (e.g., `sha-a1b2c3d`)
+  - Semantic version from Git tags (e.g., `v1.0.0`)
+
+To access the images from GHCR, use:
+```bash
+# Pull the bridge image
+docker pull ghcr.io/OWNER/project-waterman-bridge:main
+
+# Pull the web image
+docker pull ghcr.io/OWNER/project-waterman-web:main
+```
+
+Replace `OWNER` with your GitHub username or organization name.
