@@ -22,3 +22,4 @@ openssl-sys = { version = "0.9.106", optional = true }
 arrow = "54.2.1"
 base64 = "0.22.1"
 serde_with = "3.12.0"
+parquet = "54.3.1"

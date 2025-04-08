@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  waterman-bridge:
+    build:
+      context: ./waterman-bridge
+    ports:
+      - "3030:3030"
+    environment:
+      - RUST_LOG=${RUST_LOG:-info}  # Default to info if not set
+    command:
+      - "--address=0.0.0.0"  # Listen on all interfaces in container
+      - "--port=3030"
+      - "--rate=1000.0"
+    restart: unless-stopped
+
+  waterman-web:
+    build:
+      context: ./waterman-web
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    depends_on:
+      - waterman-bridge
+    # Optional environment variables if needed
+    # environment:
+    #   - SOME_ENV_VAR=value
+
+# Add a volume for persistent data if needed
+# volumes:
+#   data-volume: 
