@@ -1,54 +1,85 @@
-# React + TypeScript + Vite
+# Waterman WebSocket Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React-based WebSocket client that connects to the Waterman Bridge server and displays Arrow RecordBatch data in real-time.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Connect to WebSocket servers with WS/WSS support
+- Visualize Arrow RecordBatch data in a table
+- Monitor connection statistics:
+  - Messages per second
+  - Rows per second
+  - Bytes per second
+- View schema information
+- Real-time performance charts
 
-## Expanding the ESLint configuration
+## Technologies
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- React 19
+- Mantine UI v7
+- Vite
+- TypeScript
+- Apache Arrow
+- Recharts for data visualization
+- MantineReactTable for data display
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v18 or higher)
+- [Bun](https://bun.sh/) (recommended for faster development)
+
+### Installation
+
+1. Install dependencies:
+
+```bash
+# Using npm
+npm install
+
+# Using Bun
+bun install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Start the development server:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+# Using npm
+npm run dev
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+# Using Bun
+bun dev
 ```
+
+3. Build for production:
+
+```bash
+# Using npm
+npm run build
+
+# Using Bun
+bun run build
+```
+
+## Usage
+
+1. Start the Waterman Bridge server
+2. Open the Waterman WebSocket Client in your browser
+3. Enter the host and port (default: `localhost:8080`)
+4. Click "Connect" to establish a WebSocket connection
+5. The client will automatically:
+   - Display real-time statistics
+   - Show record batch data
+   - Display the schema
+   - Graph performance metrics
+
+## WebSocket Data Format
+
+The client expects the WebSocket server to send Arrow RecordBatch data in the IPC format. Each message should contain a complete RecordBatch that can be parsed with the Apache Arrow JS library.
+
+## Project Structure
+
+- `src/hooks/useArrowWebSocket.ts` - Custom hook for handling WebSocket connections and processing Arrow data
+- `src/components/` - UI components
+- `src/App.tsx` - Main application component

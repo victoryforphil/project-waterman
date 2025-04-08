@@ -1,34 +1,78 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { MantineProvider, createTheme, Container, Grid, Stack, AppShell, Text, Group, Title } from '@mantine/core'
+import { useArrowWebSocket } from './hooks/useArrowWebSocket'
+import { ConnectionSettings } from './components/ConnectionSettings'
+import { ConnectionStats } from './components/ConnectionStats'
+import { SchemaDisplay } from './components/SchemaDisplay'
+import { DataTable } from './components/DataTable'
+import { StatsChart } from './components/StatsChart'
 
+import '@mantine/core/styles.css'
+import '@mantine/core/styles.css'
+import '@mantine/notifications/styles.css'
+import '@mantine/dropzone/styles.css'
+import '@mantine/code-highlight/styles.css';
+import { theme } from './theme'
+import './index.css'
 function App() {
-  const [count, setCount] = useState(0)
+  const { 
+    isConnected, 
+    lastBatch, 
+    schema, 
+    stats, 
+    connect, 
+    disconnect, 
+    error
+  } = useArrowWebSocket();
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <MantineProvider theme={theme} defaultColorScheme="dark">
+      <AppShell header={{ height: 70 }}>
+        <AppShell.Header p="md">
+          <Group justify="space-between">
+            <Title order={2}>Waterman WebSocket Client</Title>
+            <Text>Arrow RecordBatch WebSocket Monitor</Text>
+          </Group>
+        </AppShell.Header>
+        
+        <AppShell.Main>
+          <Container size="100%" py="xl">
+            <Grid gutter="md">
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <ConnectionSettings 
+                  onConnect={connect}
+                  onDisconnect={disconnect}
+                  isConnected={isConnected}
+                  error={error}
+                />
+              </Grid.Col>
+              
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <ConnectionStats 
+                  stats={stats}
+                  isConnected={isConnected}
+                />
+              </Grid.Col>
+              
+              <Grid.Col span={12}>
+                <StatsChart 
+                  stats={stats}
+                  isConnected={isConnected}
+                />
+              </Grid.Col>
+              
+              <Grid.Col span={{ base: 12, md: 4 }}>
+                <SchemaDisplay schema={schema} />
+              </Grid.Col>
+              
+              <Grid.Col span={{ base: 12, md: 8 }}>
+                <DataTable recordBatch={lastBatch} />
+              </Grid.Col>
+            </Grid>
+          </Container>
+        </AppShell.Main>
+      </AppShell>
+    </MantineProvider>
   )
 }
 
