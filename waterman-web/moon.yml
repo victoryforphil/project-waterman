@@ -1,0 +1,12 @@
+$schema: 'https://moonrepo.dev/schemas/tasks.json'
+
+language: "typescript"
+
+project:
+  name: 'cursed-web'
+  description: 'Web app for cursed'
+  metadata:
+    tag: 'cursed-web'
+
+tags:
+- 'docker'

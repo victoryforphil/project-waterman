@@ -1,0 +1,47 @@
+$schema: 'https://moonrepo.dev/schemas/tasks.json'
+
+fileGroups:
+  typescript:
+  - 'src/**/*.ts'
+  - 'src/**/*.tsx'
+  - 'tests/**/*.ts'
+  - 'tests/**/*.tsx'
+  - 'prisma/**/*.prisma'
+  configs:
+  - 'tsconfig.json'
+  - 'tsconfig.*.json'
+  - 'prisma/**/*.prisma'
+  - 'prisma/**/*.yml'
+  assets:
+  - 'public/**/*'
+
+tasks:
+  install:
+    command: 'bun install'
+    inputs:
+    - '@globs(typescript)'
+    - '@globs(configs)'
+    options:
+      mergeDeps: append
+
+  typecheck:
+    command: 'bun run tsc'
+    inputs:
+    - '@globs(typescript)'
+    - '@globs(configs)'
+    options:
+      runInCI: true
+
+  lint:
+    command: 'bun run eslint'
+    inputs:
+    - '@globs(typescript)'
+    options:
+      runInCI: true
+
+  format:
+    command: 'bun run prettier'
+    inputs:
+    - '@globs(typescript)'
+    options:
+      runInCI: true

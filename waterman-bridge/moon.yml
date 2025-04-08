@@ -1,0 +1,8 @@
+# Moon project configuration for waterman-bridge (Rust)
+$schema: 'https://moonrepo.dev/schemas/project.json'
+language: 'rust'
+type: 'application'
+project:
+  name: 'waterman-bridge'
+  description: 'WebSocket bridge server for the Waterman Kit'
+
