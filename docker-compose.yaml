@@ -5,12 +5,12 @@ services:
     build:
       context: ./waterman-bridge
     ports:
-      - "3030:3030"
+      - "3031:3031"
     environment:
       - RUST_LOG=${RUST_LOG:-info}  # Default to info if not set
     command:
       - "--address=0.0.0.0"  # Listen on all interfaces in container
-      - "--port=3030"
+      - "--port=3031"
       - "--rate=1000.0"
     restart: unless-stopped
 

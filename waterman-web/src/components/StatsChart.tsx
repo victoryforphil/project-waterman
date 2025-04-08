@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Paper, Title, Divider, SegmentedControl } from '@mantine/core';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Stats } from '../hooks/useArrowWebSocket';
@@ -18,15 +18,24 @@ interface ChartDataPoint {
 export function StatsChart({ stats, isConnected }: StatsChartProps) {
   const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
   const [chartType, setChartType] = useState<'messages' | 'rows' | 'bytes'>('messages');
+  const lastUpdateTimeRef = useRef<number>(0);
   
   // Update chart data with current stats
   useEffect(() => {
+    // Only update chart every 500ms to avoid too many updates
+    const now = Date.now();
+    if (now - lastUpdateTimeRef.current < 500 && chartData.length > 0) {
+      return;
+    }
+    
+    lastUpdateTimeRef.current = now;
+    
     if (isConnected) {
-      const now = new Date();
-      const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+      const date = new Date();
+      const timeString = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}.${Math.floor(date.getMilliseconds() / 100)}`;
       
       setChartData(prevData => {
-        // Keep only the last 30 data points
+        // Keep only the last 45 data points (showing ~20 seconds at 500ms updates)
         const newData = [...prevData, {
           time: timeString,
           messagesPerSecond: stats.messagesPerSecond,
@@ -34,14 +43,33 @@ export function StatsChart({ stats, isConnected }: StatsChartProps) {
           bytesPerSecond: stats.bytesPerSecond,
         }];
         
-        if (newData.length > 30) {
-          return newData.slice(newData.length - 30);
+        if (newData.length > 45) {
+          return newData.slice(newData.length - 45);
+        }
+        
+        return newData;
+      });
+    } else if (chartData.length > 0 && stats.messagesPerSecond === 0) {
+      // Add zero point when disconnected or no data
+      const date = new Date();
+      const timeString = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}.${Math.floor(date.getMilliseconds() / 100)}`;
+      
+      setChartData(prevData => {
+        const newData = [...prevData, {
+          time: timeString,
+          messagesPerSecond: 0,
+          rowsPerSecond: 0,
+          bytesPerSecond: 0,
+        }];
+        
+        if (newData.length > 45) {
+          return newData.slice(newData.length - 45);
         }
         
         return newData;
       });
     }
-  }, [stats, isConnected]);
+  }, [stats, isConnected, chartData.length]);
   
   // Format Y-axis tick values
   const formatYAxis = (value: number) => {
@@ -84,8 +112,15 @@ export function StatsChart({ stats, isConnected }: StatsChartProps) {
             margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="time" />
-            <YAxis tickFormatter={formatYAxis} />
+            <XAxis 
+              dataKey="time" 
+              tickFormatter={(tick) => tick.split('.')[0]} // Remove milliseconds from display
+              minTickGap={50} // Prevent overcrowding of labels
+            />
+            <YAxis 
+              tickFormatter={formatYAxis} 
+              domain={[0, 'auto']} // Start from zero
+            />
             <Tooltip 
               formatter={(value: number) => {
                 if (chartType === 'bytes') {
@@ -106,7 +141,9 @@ export function StatsChart({ stats, isConnected }: StatsChartProps) {
                 dataKey="messagesPerSecond" 
                 name="Messages/sec" 
                 stroke="#2C8A52" 
-                activeDot={{ r: 8 }} 
+                activeDot={{ r: 8 }}
+                dot={false} // Hide dots for smoother line
+                isAnimationActive={false} // Disable animations for better performance
               />
             )}
             {chartType === 'rows' && (
@@ -115,7 +152,9 @@ export function StatsChart({ stats, isConnected }: StatsChartProps) {
                 dataKey="rowsPerSecond" 
                 name="Rows/sec" 
                 stroke="#339AF0" 
-                activeDot={{ r: 8 }} 
+                activeDot={{ r: 8 }}
+                dot={false}
+                isAnimationActive={false}
               />
             )}
             {chartType === 'bytes' && (
@@ -124,7 +163,9 @@ export function StatsChart({ stats, isConnected }: StatsChartProps) {
                 dataKey="bytesPerSecond" 
                 name="Bytes/sec" 
                 stroke="#845EF7" 
-                activeDot={{ r: 8 }} 
+                activeDot={{ r: 8 }}
+                dot={false}
+                isAnimationActive={false}
               />
             )}
           </LineChart>

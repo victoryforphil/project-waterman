@@ -21,7 +21,7 @@ WORKDIR /app
 COPY --from=builder /usr/src/app/target/release/waterman-bridge /app/
 
 # Expose default port
-EXPOSE 3030
+EXPOSE 3031
 
 # Set environment variables
 ENV RUST_LOG=info

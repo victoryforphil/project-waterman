@@ -1,4 +1,4 @@
-import { Paper, Grid, Text, Title, Group } from '@mantine/core';
+import { Paper, Grid, Text, Title, Group, Badge } from '@mantine/core';
 import { Stats } from '../hooks/useArrowWebSocket';
 
 interface StatsProps {
@@ -7,13 +7,13 @@ interface StatsProps {
 }
 
 export function ConnectionStats({ stats, isConnected }: StatsProps) {
-  const formatNumber = (num: number) => {
+  const formatNumber = (num: number, decimals = 2) => {
     if (num > 1000000) {
-      return `${(num / 1000000).toFixed(2)} M`;
+      return `${(num / 1000000).toFixed(decimals)} M`;
     } else if (num > 1000) {
-      return `${(num / 1000).toFixed(2)} K`;
+      return `${(num / 1000).toFixed(decimals)} K`;
     }
-    return num.toFixed(2);
+    return num.toFixed(decimals);
   };
   
   const formatBytes = (bytes: number) => {
@@ -24,20 +24,52 @@ export function ConnectionStats({ stats, isConnected }: StatsProps) {
     } else if (bytes > 1024) {
       return `${(bytes / 1024).toFixed(2)} KB`;
     }
-    return `${bytes.toFixed(2)} B`;
+    return `${bytes.toFixed(0)} B`;
+  };
+
+  // Color coding based on rate values
+  const getColorForRate = (rate: number, type: 'messages' | 'rows' | 'bytes') => {
+    if (!isConnected) return "dimmed";
+    
+    // Different thresholds for different types
+    if (type === 'messages') {
+      if (rate === 0) return "red";
+      if (rate < 5) return "orange";
+      return "green";
+    } else if (type === 'rows') {
+      if (rate === 0) return "red";
+      if (rate < 100) return "orange";
+      return "blue";
+    } else { // bytes
+      if (rate === 0) return "red";
+      if (rate < 1024) return "orange";
+      return "violet";
+    }
   };
   
   return (
     <Paper p="md" withBorder>
-      <Title order={4} mb="md">Connection Statistics</Title>
+      <Group justify="space-between" mb="md">
+        <Title order={4}>Connection Statistics</Title>
+        <Badge 
+          color={isConnected ? "green" : "red"} 
+          variant="filled"
+        >
+          {isConnected ? "Connected" : "Disconnected"}
+        </Badge>
+      </Group>
       
       <Grid>
         <Grid.Col span={{ base: 12, md: 4 }}>
           <Paper p="xs" withBorder>
-            <Group>
+            <Group justify="space-between">
               <Text size="sm" fw={500} c="dimmed">Messages/sec:</Text>
-              <Text size="sm" fw={700} c={isConnected ? "green" : "dimmed"}>
-                {isConnected ? formatNumber(stats.messagesPerSecond) : "0"}
+              <Text 
+                size="sm" 
+                fw={700} 
+                c={getColorForRate(stats.messagesPerSecond, 'messages')}
+              >
+                {formatNumber(stats.messagesPerSecond, 0)}
               </Text>
             </Group>
           </Paper>
@@ -45,10 +77,14 @@ export function ConnectionStats({ stats, isConnected }: StatsProps) {
         
         <Grid.Col span={{ base: 12, md: 4 }}>
           <Paper p="xs" withBorder>
-            <Group>
+            <Group justify="space-between">
               <Text size="sm" fw={500} c="dimmed">Rows/sec:</Text>
-              <Text size="sm" fw={700} c={isConnected ? "blue" : "dimmed"}>
-                {isConnected ? formatNumber(stats.rowsPerSecond) : "0"}
+              <Text 
+                size="sm" 
+                fw={700} 
+                c={getColorForRate(stats.rowsPerSecond, 'rows')}
+              >
+                {formatNumber(stats.rowsPerSecond, 0)}
               </Text>
             </Group>
           </Paper>
@@ -56,10 +92,14 @@ export function ConnectionStats({ stats, isConnected }: StatsProps) {
         
         <Grid.Col span={{ base: 12, md: 4 }}>
           <Paper p="xs" withBorder>
-            <Group>
+            <Group justify="space-between">
               <Text size="sm" fw={500} c="dimmed">Data rate:</Text>
-              <Text size="sm" fw={700} c={isConnected ? "violet" : "dimmed"}>
-                {isConnected ? `${formatBytes(stats.bytesPerSecond)}/s` : "0 B/s"}
+              <Text 
+                size="sm" 
+                fw={700} 
+                c={getColorForRate(stats.bytesPerSecond, 'bytes')}
+              >
+                {`${formatBytes(stats.bytesPerSecond)}/s`}
               </Text>
             </Group>
           </Paper>
@@ -67,25 +107,25 @@ export function ConnectionStats({ stats, isConnected }: StatsProps) {
         
         <Grid.Col span={{ base: 12, md: 4 }}>
           <Paper p="xs" withBorder>
-            <Group>
+            <Group justify="space-between">
               <Text size="sm" fw={500} c="dimmed">Total messages:</Text>
-              <Text size="sm" fw={700}>{formatNumber(stats.totalMessages)}</Text>
+              <Text size="sm" fw={700}>{formatNumber(stats.totalMessages, 0)}</Text>
             </Group>
           </Paper>
         </Grid.Col>
         
         <Grid.Col span={{ base: 12, md: 4 }}>
           <Paper p="xs" withBorder>
-            <Group>
+            <Group justify="space-between">
               <Text size="sm" fw={500} c="dimmed">Total rows:</Text>
-              <Text size="sm" fw={700}>{formatNumber(stats.totalRows)}</Text>
+              <Text size="sm" fw={700}>{formatNumber(stats.totalRows, 0)}</Text>
             </Group>
           </Paper>
         </Grid.Col>
         
         <Grid.Col span={{ base: 12, md: 4 }}>
           <Paper p="xs" withBorder>
-            <Group>
+            <Group justify="space-between">
               <Text size="sm" fw={500} c="dimmed">Total data:</Text>
               <Text size="sm" fw={700}>{formatBytes(stats.totalBytes)}</Text>
             </Group>

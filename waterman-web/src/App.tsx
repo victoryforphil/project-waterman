@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { MantineProvider, createTheme, Container, Grid, Stack, AppShell, Text, Group, Title } from '@mantine/core'
+
+import { MantineProvider, Container, Grid, AppShell, Text, Group, Title } from '@mantine/core'
 import { useArrowWebSocket } from './hooks/useArrowWebSocket'
 import { ConnectionSettings } from './components/ConnectionSettings'
 import { ConnectionStats } from './components/ConnectionStats'

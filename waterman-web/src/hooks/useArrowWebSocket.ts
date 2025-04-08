@@ -21,6 +21,12 @@ interface ArrowWebSocketHook {
   error: string | null;
 }
 
+interface DataPoint {
+  timestamp: number;
+  rows: number;
+  bytes: number;
+}
+
 const initialStats: Stats = {
   messagesPerSecond: 0,
   rowsPerSecond: 0,
@@ -41,32 +47,46 @@ export const useArrowWebSocket = (): ArrowWebSocketHook => {
   const socketRef = useRef<WebSocket | null>(null);
   const statsRef = useRef<Stats>({...initialStats});
   const statsIntervalRef = useRef<number | null>(null);
-  const lastMessagesRef = useRef<number[]>([]);
+  const dataPointsRef = useRef<DataPoint[]>([]);
   
-  // Calculate stats every second
+  // Calculate stats every interval
   const calculateStats = useCallback(() => {
     const now = Date.now();
-    // Keep only messages from the last second for rate calculation
-    const recentMessages = lastMessagesRef.current.filter(time => now - time < 1000);
-    lastMessagesRef.current = recentMessages;
+    const oneSecondAgo = now - 1000;
     
-    if (recentMessages.length > 0) {
-      setStats(prev => ({
-        ...prev,
-        messagesPerSecond: recentMessages.length,
-      }));
-    }
+    // Filter data points from last second
+    const recentDataPoints = dataPointsRef.current.filter(point => point.timestamp >= oneSecondAgo);
+    dataPointsRef.current = recentDataPoints;
     
-    // Update other stats based on accumulated totals
-    const timeDiff = (now - statsRef.current.lastMessageTime) / 1000;
-    if (timeDiff > 0 && statsRef.current.totalMessages > 0) {
+    if (recentDataPoints.length > 0) {
+      // Calculate message rate
+      const messagesPerSecond = recentDataPoints.length;
+      
+      // Calculate rows per second
+      const totalRows = recentDataPoints.reduce((sum, point) => sum + point.rows, 0);
+      const rowsPerSecond = totalRows;
+      
+      // Calculate bytes per second
+      const totalBytes = recentDataPoints.reduce((sum, point) => sum + point.bytes, 0);
+      const bytesPerSecond = totalBytes;
+      
+      // Update stats state
       setStats({
         ...statsRef.current,
-        rowsPerSecond: statsRef.current.totalRows / timeDiff,
-        bytesPerSecond: statsRef.current.totalBytes / timeDiff,
+        messagesPerSecond,
+        rowsPerSecond,
+        bytesPerSecond,
       });
+    } else if (isConnected) {
+      // If connected but no recent data, show zero rates
+      setStats(prev => ({
+        ...prev,
+        messagesPerSecond: 0,
+        rowsPerSecond: 0,
+        bytesPerSecond: 0,
+      }));
     }
-  }, []);
+  }, [isConnected]);
   
   // Parse Arrow IPC buffer
   const parseArrowData = useCallback((buffer: ArrayBuffer) => {
@@ -109,7 +129,6 @@ export const useArrowWebSocket = (): ArrowWebSocketHook => {
           try {
             // Track message receipt time for rate calculation
             const now = Date.now();
-            lastMessagesRef.current.push(now);
             
             // Parse the Arrow IPC data
             const result = parseArrowData(buffer);
@@ -121,10 +140,18 @@ export const useArrowWebSocket = (): ArrowWebSocketHook => {
               setLastBatch(batch);
               setSchema(schemaObj);
               
-              // Update stats
+              // Get message details
               const messageSize = buffer.byteLength;
               const rowCount = batch.numRows;
               
+              // Add data point for rate calculation
+              dataPointsRef.current.push({
+                timestamp: now,
+                rows: rowCount,
+                bytes: messageSize
+              });
+              
+              // Update cumulative stats
               statsRef.current = {
                 ...statsRef.current,
                 lastMessageTime: now,
@@ -163,7 +190,7 @@ export const useArrowWebSocket = (): ArrowWebSocketHook => {
       // Reset stats
       statsRef.current = {...initialStats, lastMessageTime: Date.now()};
       setStats(statsRef.current);
-      lastMessagesRef.current = [];
+      dataPointsRef.current = [];
       setError(null);
       
       const socket = new WebSocket(url);
@@ -192,12 +219,12 @@ export const useArrowWebSocket = (): ArrowWebSocketHook => {
       
       socketRef.current = socket;
       
-      // Start stats calculation interval
+      // Start stats calculation interval (more frequent updates for smoother visualization)
       if (statsIntervalRef.current) {
         clearInterval(statsIntervalRef.current);
       }
       
-      statsIntervalRef.current = window.setInterval(calculateStats, 200);
+      statsIntervalRef.current = window.setInterval(calculateStats, 250);
     } catch (e) {
       setError(`Failed to connect: ${e instanceof Error ? e.message : String(e)}`);
     }
