@@ -21,7 +21,7 @@ export function ConnectionSettings({
   
   // Construct WebSocket URL
   const getWebSocketUrl = () => {
-    const protocol = secure ? 'wss' : 'ws';
+    const protocol = secure ? 'wss' : 'http';
     const formattedPath = path.startsWith('/') ? path : `/${path}`;
     return `${protocol}://${host}:${port}${formattedPath}`;
   };

@@ -1,0 +1,19 @@
+data_volume:
+  num_channels: 10
+  float_precision: 100000000.0
+  data_rate_hz: 50.0
+  test_duration: Medium
+data_characteristics:
+  data_type: NestedObject
+  include_missing_data: false
+  include_data_gaps: false
+  signal_pattern: StepFunction
+  include_outliers: false
+websocket:
+  batch_size: 10
+  message_size: 0
+  message_frequency: 100.0
+  simulate_disconnects: false
+  simulate_latency: false
+  latency_ms: 0
+  disconnection_probability: 0.0
