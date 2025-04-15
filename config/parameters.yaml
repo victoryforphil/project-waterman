@@ -1,5 +1,5 @@
 data_volume:
-  num_channels: 1000
+  num_channels: 50
   float_precision: 100000000.0
   data_rate_hz: 1000.0
   test_duration: Medium
@@ -10,9 +10,9 @@ data_characteristics:
   signal_pattern: SineWave
   include_outliers: false
 websocket:
-  batch_size: 100
+  batch_size: 20
   message_size: 0
-  message_frequency: 100.0
+  message_frequency: 1000.0
   simulate_disconnects: false
   simulate_latency: false
   latency_ms: 0

@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Container, Grid, Tabs, Title, Alert, Button } from '@mantine/core';
-import { IconSettings, IconChartBar, IconServer, IconNetwork } from '@tabler/icons-react';
+import { IconSettings, IconChartBar, IconServer, IconNetwork, IconLayoutDashboard } from '@tabler/icons-react';
 import { useParameters } from '../../hooks/useParameters';
 import { DataVolumeSettings } from './DataVolumeSettings';
 import { DataCharacteristicsSettings } from './DataCharacteristicsSettings';
 import { WebSocketSettings } from './WebSocketSettings';
 import { ServerStatus } from './ServerStatus';
+import { InterfaceSettings } from './InterfaceSettings';
 
 interface SettingsPageProps {
   apiBaseUrl?: string;
@@ -77,6 +78,12 @@ export function SettingsPage({ apiBaseUrl = 'http://localhost:3031' }: SettingsP
               >
                 WebSocket
               </Tabs.Tab>
+              <Tabs.Tab
+                value="interface"
+                leftSection={<IconLayoutDashboard size={16} />}
+              >
+                Interface
+              </Tabs.Tab>
             </Tabs.List>
 
             <Tabs.Panel value="data-volume" pt="md">
@@ -101,6 +108,10 @@ export function SettingsPage({ apiBaseUrl = 'http://localhost:3031' }: SettingsP
                 loading={loading}
                 onUpdate={updateWebSocketParams}
               />
+            </Tabs.Panel>
+            
+            <Tabs.Panel value="interface" pt="md">
+              <InterfaceSettings />
             </Tabs.Panel>
           </Tabs>
         </Grid.Col>
