@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Switch, Select, Stack, Button, Group, Paper, Title, Divider, LoadingOverlay, Tooltip, Text } from '@mantine/core';
 import { IconInfoCircle } from '@tabler/icons-react';
 import { useForm } from '@mantine/form';
@@ -11,8 +11,6 @@ interface DataCharacteristicsSettingsProps {
 }
 
 export function DataCharacteristicsSettings({ params, loading, onUpdate }: DataCharacteristicsSettingsProps) {
-  const [isEditing, setIsEditing] = useState(false);
-
   const form = useForm<DataCharacteristicsParams>({
     initialValues: {
       data_type: DataType.Float64,
@@ -24,21 +22,13 @@ export function DataCharacteristicsSettings({ params, loading, onUpdate }: DataC
   });
 
   useEffect(() => {
-    if (params && !isEditing) {
-      form.setValues(params);
-    }
-  }, [params, isEditing]);
-
-  const handleSubmit = (values: DataCharacteristicsParams) => {
-    onUpdate(values);
-    setIsEditing(false);
-  };
-
-  const handleCancel = () => {
     if (params) {
       form.setValues(params);
     }
-    setIsEditing(false);
+  }, [params]);
+
+  const handleSubmit = (values: DataCharacteristicsParams) => {
+    onUpdate(values);
   };
 
   // Label with tooltip helper component
@@ -82,7 +72,6 @@ export function DataCharacteristicsSettings({ params, loading, onUpdate }: DataC
               { value: DataType.Array, label: 'Array' },
               { value: DataType.NestedObject, label: 'Nested Object' },
             ]}
-            disabled={!isEditing}
             {...form.getInputProps('data_type')}
           />
 
@@ -101,7 +90,6 @@ export function DataCharacteristicsSettings({ params, loading, onUpdate }: DataC
               { value: SignalPattern.ImpulseResponse, label: 'Impulse Response' },
               { value: SignalPattern.Mixed, label: 'Mixed Patterns' },
             ]}
-            disabled={!isEditing}
             {...form.getInputProps('signal_pattern')}
           />
 
@@ -113,7 +101,6 @@ export function DataCharacteristicsSettings({ params, loading, onUpdate }: DataC
               />
             }
             description="Some data points will be missing or null"
-            disabled={!isEditing}
             {...form.getInputProps('include_missing_data', { type: 'checkbox' })}
           />
 
@@ -125,7 +112,6 @@ export function DataCharacteristicsSettings({ params, loading, onUpdate }: DataC
               />
             }
             description="Simulate gaps in the data stream"
-            disabled={!isEditing}
             {...form.getInputProps('include_data_gaps', { type: 'checkbox' })}
           />
 
@@ -137,29 +123,15 @@ export function DataCharacteristicsSettings({ params, loading, onUpdate }: DataC
               />
             }
             description="Add occasional outlier/spike values"
-            disabled={!isEditing}
             {...form.getInputProps('include_outliers', { type: 'checkbox' })}
           />
 
           <Group justify="flex-end" mt="md">
-            {isEditing ? (
-              <>
-                <Button variant="outline" color="gray" onClick={handleCancel}>
-                  Cancel
-                </Button>
-                <Tooltip label="Save the current settings to the server" position="top">
-                  <Button type="submit" color="blue">
-                    Save Changes
-                  </Button>
-                </Tooltip>
-              </>
-            ) : (
-              <Tooltip label="Enable editing of data characteristics" position="top">
-                <Button color="blue" onClick={() => setIsEditing(true)}>
-                  Edit Settings
-                </Button>
-              </Tooltip>
-            )}
+            <Tooltip label="Save the current settings to the server" position="top">
+              <Button type="submit" color="blue">
+                Save Changes
+              </Button>
+            </Tooltip>
           </Group>
         </Stack>
       </form>

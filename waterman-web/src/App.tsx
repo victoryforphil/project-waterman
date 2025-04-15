@@ -8,7 +8,8 @@ import {
   Group, 
   Title, 
   Tabs,
-  ActionIcon
+  ActionIcon,
+  Box
 } from '@mantine/core'
 import { IconGauge, IconSettings } from '@tabler/icons-react'
 import { useArrowWebSocket } from './hooks/useArrowWebSocket'
@@ -19,7 +20,6 @@ import { DataTable } from './components/DataTable'
 import { StatsChart } from './components/StatsChart'
 import { SettingsPage } from './components/settings/SettingsPage'
 
-import '@mantine/core/styles.css'
 import '@mantine/core/styles.css'
 import '@mantine/notifications/styles.css'
 import '@mantine/dropzone/styles.css'
@@ -70,7 +70,7 @@ function App() {
         
         <AppShell.Main>
           {activeTab === 'dashboard' ? (
-            <Container size="100%" py="xl">
+            <Container fluid py="xl" px="md">
               <Grid gutter="md">
                 <Grid.Col span={{ base: 12, md: 6 }}>
                   <ConnectionSettings 
@@ -95,12 +95,16 @@ function App() {
                   />
                 </Grid.Col>
                 
-                <Grid.Col span={{ base: 12, md: 4 }}>
-                  <SchemaDisplay schema={schema} />
-                </Grid.Col>
-                
-                <Grid.Col span={{ base: 12, md: 8 }}>
-                  <DataTable recordBatch={lastBatch} />
+                <Grid.Col span={12}>
+                  <Grid gutter="md">
+                    <Grid.Col span={{ base: 12, lg: 3 }}>
+                      <SchemaDisplay schema={schema} />
+                    </Grid.Col>
+                    
+                    <Grid.Col span={{ base: 12, lg: 9 }}>
+                      <DataTable recordBatch={lastBatch} />
+                    </Grid.Col>
+                  </Grid>
                 </Grid.Col>
               </Grid>
             </Container>

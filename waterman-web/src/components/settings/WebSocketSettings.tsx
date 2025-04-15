@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { NumberInput, Switch, Stack, Button, Group, Paper, Title, Divider, LoadingOverlay, Tooltip, Text } from '@mantine/core';
 import { IconInfoCircle } from '@tabler/icons-react';
 import { useForm } from '@mantine/form';
@@ -11,8 +11,6 @@ interface WebSocketSettingsProps {
 }
 
 export function WebSocketSettings({ params, loading, onUpdate }: WebSocketSettingsProps) {
-  const [isEditing, setIsEditing] = useState(false);
-
   const form = useForm<WebSocketParams>({
     initialValues: {
       batch_size: 10,
@@ -35,21 +33,13 @@ export function WebSocketSettings({ params, loading, onUpdate }: WebSocketSettin
   });
 
   useEffect(() => {
-    if (params && !isEditing) {
-      form.setValues(params);
-    }
-  }, [params, isEditing]);
-
-  const handleSubmit = (values: WebSocketParams) => {
-    onUpdate(values);
-    setIsEditing(false);
-  };
-
-  const handleCancel = () => {
     if (params) {
       form.setValues(params);
     }
-    setIsEditing(false);
+  }, [params]);
+
+  const handleSubmit = (values: WebSocketParams) => {
+    onUpdate(values);
   };
 
   // Label with tooltip helper component
@@ -89,7 +79,6 @@ export function WebSocketSettings({ params, loading, onUpdate }: WebSocketSettin
             min={1}
             max={10000}
             step={1}
-            disabled={!isEditing}
             {...form.getInputProps('batch_size')}
           />
 
@@ -103,7 +92,6 @@ export function WebSocketSettings({ params, loading, onUpdate }: WebSocketSettin
             description="Size of each message in bytes (0 = auto)"
             min={0}
             step={100}
-            disabled={!isEditing}
             {...form.getInputProps('message_size')}
           />
 
@@ -118,7 +106,6 @@ export function WebSocketSettings({ params, loading, onUpdate }: WebSocketSettin
             min={0.1}
             max={10000}
             step={1}
-            disabled={!isEditing}
             {...form.getInputProps('message_frequency')}
           />
 
@@ -130,7 +117,6 @@ export function WebSocketSettings({ params, loading, onUpdate }: WebSocketSettin
               />
             }
             description="Randomly disconnect the WebSocket connection"
-            disabled={!isEditing}
             {...form.getInputProps('simulate_disconnects', { type: 'checkbox' })}
           />
 
@@ -146,7 +132,6 @@ export function WebSocketSettings({ params, loading, onUpdate }: WebSocketSettin
               min={0}
               max={1}
               step={0.01}
-              disabled={!isEditing}
               {...form.getInputProps('disconnection_probability')}
             />
           )}
@@ -159,7 +144,6 @@ export function WebSocketSettings({ params, loading, onUpdate }: WebSocketSettin
               />
             }
             description="Add artificial delay to messages"
-            disabled={!isEditing}
             {...form.getInputProps('simulate_latency', { type: 'checkbox' })}
           />
 
@@ -175,30 +159,16 @@ export function WebSocketSettings({ params, loading, onUpdate }: WebSocketSettin
               min={0}
               max={10000}
               step={10}
-              disabled={!isEditing}
               {...form.getInputProps('latency_ms')}
             />
           )}
 
           <Group justify="flex-end" mt="md">
-            {isEditing ? (
-              <>
-                <Button variant="outline" color="gray" onClick={handleCancel}>
-                  Cancel
-                </Button>
-                <Tooltip label="Save the current WebSocket settings to the server" position="top">
-                  <Button type="submit" color="blue">
-                    Save Changes
-                  </Button>
-                </Tooltip>
-              </>
-            ) : (
-              <Tooltip label="Enable editing of WebSocket settings" position="top">
-                <Button color="blue" onClick={() => setIsEditing(true)}>
-                  Edit Settings
-                </Button>
-              </Tooltip>
-            )}
+            <Tooltip label="Save the current WebSocket settings to the server" position="top">
+              <Button type="submit" color="blue">
+                Save Changes
+              </Button>
+            </Tooltip>
           </Group>
         </Stack>
       </form>

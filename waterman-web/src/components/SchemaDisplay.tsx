@@ -9,7 +9,7 @@ interface SchemaDisplayProps {
 export function SchemaDisplay({ schema }: SchemaDisplayProps) {
   if (!schema) {
     return (
-      <Paper p="md" withBorder>
+      <Paper p="md" withBorder h="100%">
         <Title order={4} mb="md">Schema</Title>
         <Divider mb="md" />
         <Code block>// No schema available yet</Code>
@@ -18,7 +18,7 @@ export function SchemaDisplay({ schema }: SchemaDisplayProps) {
   }
 
   return (
-    <Paper p="md" withBorder>
+    <Paper p="md" withBorder h="100%">
       <Title order={4} mb="md">Schema</Title>
       <Divider mb="md" />
       <JsonView data={schema} />

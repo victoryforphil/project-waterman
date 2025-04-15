@@ -1,16 +1,16 @@
 data_volume:
-  num_channels: 10
+  num_channels: 1000
   float_precision: 100000000.0
-  data_rate_hz: 50.0
+  data_rate_hz: 1000.0
   test_duration: Medium
 data_characteristics:
   data_type: NestedObject
   include_missing_data: false
   include_data_gaps: false
-  signal_pattern: StepFunction
+  signal_pattern: SineWave
   include_outliers: false
 websocket:
-  batch_size: 10
+  batch_size: 100
   message_size: 0
   message_frequency: 100.0
   simulate_disconnects: false

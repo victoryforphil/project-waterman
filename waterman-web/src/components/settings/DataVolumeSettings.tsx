@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { NumberInput, Select, Stack, Button, Group, Paper, Title, Divider, LoadingOverlay, Tooltip, Text } from '@mantine/core';
 import { IconInfoCircle } from '@tabler/icons-react';
 import { useForm } from '@mantine/form';
@@ -11,8 +11,6 @@ interface DataVolumeSettingsProps {
 }
 
 export function DataVolumeSettings({ params, loading, onUpdate }: DataVolumeSettingsProps) {
-  const [isEditing, setIsEditing] = useState(false);
-
   const form = useForm<DataVolumeParams>({
     initialValues: {
       num_channels: 10,
@@ -28,21 +26,13 @@ export function DataVolumeSettings({ params, loading, onUpdate }: DataVolumeSett
   });
 
   useEffect(() => {
-    if (params && !isEditing) {
-      form.setValues(params);
-    }
-  }, [params, isEditing]);
-
-  const handleSubmit = (values: DataVolumeParams) => {
-    onUpdate(values);
-    setIsEditing(false);
-  };
-
-  const handleCancel = () => {
     if (params) {
       form.setValues(params);
     }
-    setIsEditing(false);
+  }, [params]);
+
+  const handleSubmit = (values: DataVolumeParams) => {
+    onUpdate(values);
   };
 
   // Label with tooltip helper component
@@ -82,7 +72,6 @@ export function DataVolumeSettings({ params, loading, onUpdate }: DataVolumeSett
             min={1}
             max={1000}
             step={1}
-            disabled={!isEditing}
             {...form.getInputProps('num_channels')}
           />
 
@@ -96,7 +85,6 @@ export function DataVolumeSettings({ params, loading, onUpdate }: DataVolumeSett
             description="Precision for floating point values (1e4, 1e8, 1e16, 1e32)"
             min={1}
             step={1000}
-            disabled={!isEditing}
             {...form.getInputProps('float_precision')}
           />
 
@@ -111,7 +99,6 @@ export function DataVolumeSettings({ params, loading, onUpdate }: DataVolumeSett
             min={0.1}
             max={100000}
             step={10}
-            disabled={!isEditing}
             {...form.getInputProps('data_rate_hz')}
           />
 
@@ -130,29 +117,15 @@ export function DataVolumeSettings({ params, loading, onUpdate }: DataVolumeSett
               { value: TestDuration.Hour, label: 'Hour (3600s)' },
               { value: TestDuration.OpenEnded, label: 'Open-ended' },
             ]}
-            disabled={!isEditing}
             {...form.getInputProps('test_duration')}
           />
 
           <Group justify="flex-end" mt="md">
-            {isEditing ? (
-              <>
-                <Button variant="outline" color="gray" onClick={handleCancel}>
-                  Cancel
-                </Button>
-                <Tooltip label="Save the current settings to the server" position="top">
-                  <Button type="submit" color="blue">
-                    Save Changes
-                  </Button>
-                </Tooltip>
-              </>
-            ) : (
-              <Tooltip label="Enable editing of data volume parameters" position="top">
-                <Button color="blue" onClick={() => setIsEditing(true)}>
-                  Edit Settings
-                </Button>
-              </Tooltip>
-            )}
+            <Tooltip label="Save the current settings to the server" position="top">
+              <Button type="submit" color="blue">
+                Save Changes
+              </Button>
+            </Tooltip>
           </Group>
         </Stack>
       </form>

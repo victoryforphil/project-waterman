@@ -221,3 +221,56 @@ h1, h2, h3, h4, h5, h6 {
 .rotating {
   animation: rotate 2s linear infinite;
 }
+
+/* Make the data table more readable */
+.mrt-table {
+  width: 100% !important;
+  overflow: auto !important;
+}
+
+.mrt-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+/* Better JSON view styling */
+.react-json-view-lite {
+  font-family: 'Roboto Mono', monospace !important;
+  font-size: 0.8rem !important;
+  line-height: 1.5 !important;
+}
+
+.react-json-view-lite .number-value {
+  color: #9c27b0 !important;
+}
+
+.react-json-view-lite .string-value {
+  color: #2196f3 !important;
+}
+
+.react-json-view-lite .boolean-value {
+  color: #ff9800 !important;
+}
+
+.react-json-view-lite .null-value {
+  color: #f44336 !important;
+}
+
+/* Improve schema display */
+.json-view-container {
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .mantine-AppShell-main {
+    padding: 0.5rem !important;
+  }
+  
+  .mantine-Paper-root {
+    padding: 0.5rem !important;
+  }
+}

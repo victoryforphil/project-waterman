@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Paper, Title, Divider } from '@mantine/core';
+import { Paper, Title, Divider, Box, ScrollArea } from '@mantine/core';
 import { MantineReactTable, type MRT_ColumnDef } from 'mantine-react-table';
 import { RecordBatch } from 'apache-arrow';
 
@@ -33,13 +33,16 @@ export function DataTable({ recordBatch }: DataTableProps) {
     return recordBatch.schema.fields.map((field) => ({
       accessorKey: field.name,
       header: field.name,
-      size: 150,
+      // Using smaller width for columns to fit more in view
+      size: 120,
+      minSize: 80,
+      maxSize: 200,
     }));
   }, [recordBatch]);
   
   if (!recordBatch) {
     return (
-      <Paper p="md" withBorder>
+      <Paper p="md" withBorder h="100%">
         <Title order={4} mb="md">Data</Title>
         <Divider mb="md" />
         <div style={{ textAlign: 'center', padding: '2rem' }}>
@@ -50,35 +53,47 @@ export function DataTable({ recordBatch }: DataTableProps) {
   }
   
   return (
-    <Paper p="md" withBorder>
+    <Paper p="md" withBorder h="100%">
       <Title order={4} mb="md">Data</Title>
       <Divider mb="md" />
-      <MantineReactTable
-        columns={columns}
-        data={data}
-        enableTableHead
-        enableTableFooter
-        enableRowSelection={false}
-        enableDensityToggle={false}
-        enableFullScreenToggle={false}
-        enablePagination
-        state={{
-          pagination: {
-            pageIndex: 0,
-            pageSize: 10,
-          },
-          density: 'xs',
-        }}
-        mantinePaperProps={{
-          shadow: 'none',
-          withBorder: false,
-        }}
-        mantineTableProps={{
-          striped: true,
-          highlightOnHover: true,
-          withColumnBorders: true,
-        }}
-      />
+      <Box style={{ overflow: 'auto' }}>
+        <MantineReactTable
+          columns={columns}
+          data={data}
+          enableTableHead
+          enableColumnResizing
+          enablePinning
+          enableRowVirtualization
+          enableColumnVirtualization
+          enableGlobalFilter={false}
+          enableRowSelection={false}
+          enableDensityToggle={true}
+          enableFullScreenToggle={true}
+          enablePagination
+          initialState={{
+            pagination: {
+              pageIndex: 0,
+              pageSize: 10,
+            },
+            density: 'xs',
+            columnVisibility: {},
+          }}
+          mantinePaperProps={{
+            shadow: 'none',
+            withBorder: false,
+            style: { maxWidth: '100%' }
+          }}
+          mantineTableContainerProps={{
+            style: { maxWidth: '100%' }
+          }}
+          mantineTableProps={{
+            striped: true,
+            highlightOnHover: true,
+            withColumnBorders: true,
+            style: { tableLayout: 'auto' }
+          }}
+        />
+      </Box>
     </Paper>
   );
 } 
